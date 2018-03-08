@@ -29,11 +29,7 @@ namespace AsyncRedux
         public TState State { get; private set; }
 
         /// <inheritdoc />
-        public async Task Dispatch(object action)
-        {
-            await _dispatcher(action);
-            await _bus.Publish(action);
-        }
+        public Task Dispatch(object action) => _dispatcher(action);
 
         /// <inheritdoc />
         public IObservable<object> Observe() => _bus.Observe<object>();
@@ -51,10 +47,11 @@ namespace AsyncRedux
 
         private Dispatcher CreateDispatcher(Middleware<TState>[] middleware)
         {
-            Task<object> InnerDispatch(object action)
+            async Task<object> InnerDispatch(object action)
             {
                 State = _reducer(State, action);
-                return Task.FromResult(action);
+                await _bus.Publish(action);
+                return action;
             }
 
             Dispatcher ApplyMiddleware(Dispatcher dispatcher, Middleware<TState> m) => m(this)(dispatcher);
