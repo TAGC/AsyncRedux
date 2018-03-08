@@ -87,5 +87,19 @@ namespace AsyncRedux.Tests
             var store = StoreSetup.CreateStore(Reducers.Replace, initialState);
             store.State.ShouldBe(initialState);
         }
+
+        [Fact]
+        internal void Store_Should_Pass_Dispatched_Actions_Through_Middleware_Before_Reducing()
+        {
+            var initialState = new State(0, false);
+            var middleware = new Middleware<State>[] { Middleware.IncrementInt, Middleware.NegateBool };
+            var store = StoreSetup.CreateStore(Reducers.Replace, initialState, middleware);
+
+            store.Dispatch(new ChangeInt(1));
+            store.State.IntProperty.ShouldBe(2);
+
+            store.Dispatch(new ChangeBool(false));
+            store.State.BoolProperty.ShouldBe(true);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AsyncBus;
 using JetBrains.Annotations;
@@ -9,14 +10,17 @@ namespace AsyncRedux
     internal sealed class Store<TState> : IObservableStore<TState>
     {
         private readonly IBus _bus;
+        private readonly Dispatcher _dispatcher;
         private readonly Reducer<TState> _reducer;
 
         /// <inheritdoc />
         public Store(
             [NotNull] Reducer<TState> reducer,
-            [CanBeNull] TState initialState = default)
+            [CanBeNull] TState initialState = default,
+            [NotNull] params Middleware<TState>[] middleware)
         {
             _reducer = reducer ?? throw new ArgumentNullException(nameof(reducer));
+            _dispatcher = CreateDispatcher(middleware ?? throw new ArgumentNullException(nameof(middleware)));
             _bus = BusSetup.CreateBus();
             State = initialState;
         }
@@ -25,11 +29,10 @@ namespace AsyncRedux
         public TState State { get; private set; }
 
         /// <inheritdoc />
-        public Task Dispatch(object action)
+        public async Task Dispatch(object action)
         {
-            State = _reducer(State, action);
-
-            return _bus.Publish(action);
+            await _dispatcher(action);
+            await _bus.Publish(action);
         }
 
         /// <inheritdoc />
@@ -44,6 +47,19 @@ namespace AsyncRedux
             subscriber.SetStore(this);
 
             return _bus.Subscribe<TAction>(subscriber.ProcessDispatchedAction);
+        }
+
+        private Dispatcher CreateDispatcher(Middleware<TState>[] middleware)
+        {
+            Task<object> InnerDispatch(object action)
+            {
+                State = _reducer(State, action);
+                return Task.FromResult(action);
+            }
+
+            Dispatcher ApplyMiddleware(Dispatcher dispatcher, Middleware<TState> m) => m(this)(dispatcher);
+
+            return middleware.Aggregate<Middleware<TState>, Dispatcher>(InnerDispatch, ApplyMiddleware);
         }
     }
 }
