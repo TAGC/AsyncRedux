@@ -1,5 +1,4 @@
-﻿using System;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 namespace AsyncRedux
 {
@@ -23,9 +22,6 @@ namespace AsyncRedux
         /// <returns>A new store.</returns>
         public static IObservableStore<TState> CreateStore<TState>(
             [NotNull] Reducer<TState> reducer,
-            [CanBeNull] TState initialState = default)
-        {
-            throw new NotImplementedException();
-        }
+            [CanBeNull] TState initialState = default) => new Store<TState>(reducer, initialState);
     }
 }
