@@ -34,5 +34,16 @@ namespace AsyncRedux
 
         /// <inheritdoc />
         public IObservable<object> Observe() => _bus.Observe<object>();
+
+        /// <inheritdoc />
+        public IDisposable Subscribe<TAction>(Func<TAction, Task> callback) => _bus.Subscribe(callback);
+
+        /// <inheritdoc />
+        public IDisposable Subscribe<TAction>(IStoreSubscriber<TState, TAction> subscriber)
+        {
+            subscriber.SetStore(this);
+
+            return _bus.Subscribe<TAction>(subscriber.ProcessDispatchedAction);
+        }
     }
 }

@@ -59,7 +59,7 @@ namespace AsyncRedux.Tests
 
         [Theory]
         [MemberData(nameof(ActionSequenceExamples))]
-        internal async Task Observable_Store_Should_Action_Observation(
+        internal async Task Observable_Store_Should_Allow_Observation(
             object[] actionSequence,
             ObservableSetup setup,
             object[] expectedObservedActions)
@@ -120,6 +120,57 @@ namespace AsyncRedux.Tests
             await _store.Dispatch(new object());
             observedActionsA.ShouldBe(new object[] { changeInt });
             observedActionsB.ShouldBe(new object[] { changeInt, changeBool });
+        }
+
+        [Fact]
+        internal async Task Store_Should_Allow_Asynchronous_Handling_Of_Dispatched_Actions()
+        {
+            var tcs = new TaskCompletionSource<object>();
+
+            Task HandleDispatchedAction(object action)
+            {
+                tcs.SetResult(action);
+                return Task.CompletedTask;
+            }
+
+            _store.Subscribe<object>(HandleDispatchedAction);
+
+            var dispatchedAction = new ChangeInt(5);
+            await _store.Dispatch(dispatchedAction);
+            var receivedAction = await tcs.Task;
+            receivedAction.ShouldBe(dispatchedAction);
+        }
+
+        [Fact]
+        internal void Subscribers_Implementing_IStoreSubscriber_Should_Receive_Store_On_Subscription()
+        {
+            var store = StoreSetup.CreateStore(Reducers.Replace, new State(1, true));
+            var subscriber = new Subscriber();
+
+            store.Subscribe(subscriber);
+            subscriber.Store.ShouldBe(store);
+        }
+
+        [Fact]
+        internal async Task Subscribers_Should_Only_Receive_Actions_Of_Type_They_Subscribe_To()
+        {
+            var tcs = new TaskCompletionSource<object>();
+
+            Task HandleDispatchedChangeBoolAction(ChangeBool changeBoolAction)
+            {
+                tcs.SetResult(changeBoolAction);
+                return Task.CompletedTask;
+            }
+
+            _store.Subscribe<ChangeBool>(HandleDispatchedChangeBoolAction);
+
+            var changeInt = new ChangeInt(5);
+            var changeBool = new ChangeBool(true);
+            await _store.Dispatch(changeInt);
+            await _store.Dispatch(changeBool);
+
+            var receivedAction = await tcs.Task;
+            receivedAction.ShouldBe(changeBool);
         }
     }
 }
