@@ -24,7 +24,7 @@ namespace AsyncRedux
         public static IObservableStore<TState> CreateStore<TState>(
             [NotNull] Reducer<TState> reducer,
             [CanBeNull] TState initialState = default,
-            [NotNull] params Middleware<TState>[] middleware)
+            [NotNull] [ItemNotNull] params Middleware<TState>[] middleware)
         {
             return new Store<TState>(reducer, initialState, middleware);
         }

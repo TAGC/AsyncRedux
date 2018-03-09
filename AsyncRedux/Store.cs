@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AsyncBus;
@@ -17,10 +18,20 @@ namespace AsyncRedux
         public Store(
             [NotNull] Reducer<TState> reducer,
             [CanBeNull] TState initialState = default,
-            [NotNull] params Middleware<TState>[] middleware)
+            [NotNull] [ItemNotNull] params Middleware<TState>[] middleware)
         {
+            if (middleware is null)
+            {
+                throw new ArgumentNullException(nameof(middleware));
+            }
+
+            if (middleware.Any(it => it is null))
+            {
+                throw new ArgumentException("Middleware delegate cannot be null", nameof(middleware));
+            }
+
             _reducer = reducer ?? throw new ArgumentNullException(nameof(reducer));
-            _dispatcher = CreateDispatcher(middleware ?? throw new ArgumentNullException(nameof(middleware)));
+            _dispatcher = CreateDispatcher(middleware);
             _bus = BusSetup.CreateBus();
             State = initialState;
         }
@@ -45,7 +56,7 @@ namespace AsyncRedux
             return _bus.Subscribe<TAction>(subscriber.ProcessDispatchedAction);
         }
 
-        private Dispatcher CreateDispatcher(Middleware<TState>[] middleware)
+        private Dispatcher CreateDispatcher(IEnumerable<Middleware<TState>> middleware)
         {
             async Task<object> InnerDispatch(object action)
             {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AsyncRedux.Tests.Mock;
@@ -61,6 +62,22 @@ namespace AsyncRedux.Tests
                 yield return new object[] { new State(0, true) };
                 yield return new object[] { new State(1, true) };
             }
+        }
+
+        [Fact]
+        internal void Store_Construction_Should_Throw_For_Null_Middleware_Collection()
+        {
+            Should.Throw<ArgumentNullException>(
+                // ReSharper disable once AssignNullToNotNullAttribute
+                () => StoreSetup.CreateStore<State>(Reducers.PassThrough, default, null));
+        }
+
+        [Fact]
+        internal void Store_Construction_Should_Throw_If_Any_Middleware_Is_Null()
+        {
+            Should.Throw<ArgumentException>(
+                // ReSharper disable once AssignNullToNotNullAttribute
+                () => StoreSetup.CreateStore<State>(Reducers.PassThrough, default, Middleware.IncrementInt, null));
         }
 
         [Theory]
