@@ -11,6 +11,6 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AsyncRedux\AsyncRedux.csproj" />
+    <ProjectReference Include="..\..\src\AsyncRedux\AsyncRedux.csproj" />
   </ItemGroup>
 </Project>
