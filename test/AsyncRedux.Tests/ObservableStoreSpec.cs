@@ -20,7 +20,9 @@ namespace AsyncRedux.Tests
         /// <inheritdoc />
         public ObservableStoreSpec()
         {
-            _store = StoreSetup.CreateStore<State>(Reducers.PassThrough);
+            _store = StoreSetup.CreateStore<State>()
+                .FromReducer(Reducers.PassThrough)
+                .Build();
         }
 
         public static IEnumerable<object[]> ActionSequenceExamples
@@ -144,7 +146,11 @@ namespace AsyncRedux.Tests
         [Fact]
         internal void Subscribers_Implementing_IStoreSubscriber_Should_Receive_Store_On_Subscription()
         {
-            var store = StoreSetup.CreateStore(Reducers.Replace, new State(1, true));
+            var store = StoreSetup.CreateStore<State>()
+                .FromReducer(Reducers.Replace)
+                .WithInitialState(new State(1, true))
+                .Build();
+
             var subscriber = new Subscriber();
 
             store.Subscribe(subscriber);

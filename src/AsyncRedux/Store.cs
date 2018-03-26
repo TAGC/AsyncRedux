@@ -17,20 +17,10 @@ namespace AsyncRedux
         /// <inheritdoc />
         public Store(
             [NotNull] Reducer<TState> reducer,
-            [CanBeNull] TState initialState = default,
-            [NotNull] [ItemNotNull] params Middleware<TState>[] middleware)
+            [CanBeNull] TState initialState,
+            [NotNull] [ItemNotNull] IEnumerable<Middleware<TState>> middleware)
         {
-            if (middleware is null)
-            {
-                throw new ArgumentNullException(nameof(middleware));
-            }
-
-            if (middleware.Any(it => it is null))
-            {
-                throw new ArgumentException("Middleware delegate cannot be null", nameof(middleware));
-            }
-
-            _reducer = reducer ?? throw new ArgumentNullException(nameof(reducer));
+            _reducer = reducer;
             _dispatcher = CreateDispatcher(middleware);
             _bus = BusSetup.CreateBus();
             State = initialState;
