@@ -1,21 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>AsyncRedux is .NET port of Redux that allows for asynchronous action dispatch and subscription.</Description>
+    <Description>Logging middleware for AsyncRedux</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyName>AsyncRedux</AssemblyName>
-    <PackageId>AsyncRedux</PackageId>
+    <AssemblyName>AsyncRedux.Middleware.Logging</AssemblyName>
+    <AssemblyName>AsyncRedux.Middleware.Logging</AssemblyName>
     <Authors>ThymineC</Authors>
     <Copyright>MIT</Copyright>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/TAGC/AsyncRedux</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AsyncBus" Version="0.2.0" />
-    <PackageReference Include="TimeIt" Version="0.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-setversion" Version="1.*" />
+    <ProjectReference Include="..\AsyncRedux\AsyncRedux.csproj" />
   </ItemGroup>
 </Project>

@@ -8,9 +8,11 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
     <PackageReference Include="Shouldly" Version="2.8.3" />
     <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="Xunit.Combinatorial" Version="1.1.20" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\AsyncRedux.Middleware.Logging\AsyncRedux.Middleware.Logging.csproj" />
     <ProjectReference Include="..\..\src\AsyncRedux\AsyncRedux.csproj" />
   </ItemGroup>
 </Project>

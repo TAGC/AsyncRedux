@@ -81,7 +81,7 @@ namespace AsyncRedux.Tests
             Should.Throw<ArgumentException>(
                 () => StoreSetup.CreateStore<State>()
                     .FromReducer(Reducers.PassThrough)
-                    .UsingMiddleware(Middleware.IncrementInt, null)
+                    .UsingMiddleware(Mock.Middleware.IncrementInt, null)
                     .Build());
         }
 
@@ -118,8 +118,8 @@ namespace AsyncRedux.Tests
             var store = StoreSetup.CreateStore<State>()
                 .FromReducer(Reducers.Replace)
                 .WithInitialState(initialState)
-                .UsingMiddleware(Middleware.IncrementInt)
-                .UsingMiddleware(Middleware.NegateBool)
+                .UsingMiddleware(Mock.Middleware.IncrementInt)
+                .UsingMiddleware(Mock.Middleware.NegateBool)
                 .Build();
 
             store.Dispatch(new ChangeInt(1));
@@ -145,7 +145,7 @@ namespace AsyncRedux.Tests
         internal void Store_Should_Pass_Dispatched_Actions_Through_Middleware_Before_Reducing()
         {
             var initialState = new State(0, false);
-            var middleware = new Middleware<State>[] { Middleware.IncrementInt, Middleware.NegateBool };
+            var middleware = new Middleware<State>[] { Mock.Middleware.IncrementInt, Mock.Middleware.NegateBool };
             var store = StoreSetup.CreateStore<State>()
                 .FromReducer(Reducers.Replace)
                 .WithInitialState(initialState)
