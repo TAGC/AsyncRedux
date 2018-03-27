@@ -17,4 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AsyncRedux\AsyncRedux.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-setversion" Version="1.*" />
+  </ItemGroup>
 </Project>
