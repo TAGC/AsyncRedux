@@ -10,13 +10,22 @@ before_build:
   - ps: $env:VERSION=$(gitversion /showvariable NuGetVersionV2)
 build_script:
   - ps: dotnet restore
-  - ps: cd src/AsyncRedux; dotnet setversion $env:VERSION; cd ../..
-  - ps: dotnet build
-  - ps: dotnet pack --include-source --include-symbols -c Release -o out/
+  - ps: |
+      foreach ($x in dir -Directory src)
+      {
+        cd src/$x; dotnet setversion $env:VERSION; cd ../..
+        dotnet build
+        dotnet pack --include-source --include-symbols -c Release -o out/
+      }
 test_script:
-  - ps: cd test/AsyncRedux.Tests; dotnet test -c Release
+  - ps: |
+      foreach ($x in dir -Directory test)
+      {
+        cd test/$x; dotnet test -c Release
+      }
+  
 artifacts:
-  path: src/AsyncRedux/out/*.nupkg
+  path: '**/*.nupkg'
   name: NuGet packages
 deploy:
   provider: NuGet
