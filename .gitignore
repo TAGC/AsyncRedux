@@ -3,4 +3,4 @@ obj/
 .vscode/
 .vs/
 *DotSettings.user*
-
+.github_changelog_generator
