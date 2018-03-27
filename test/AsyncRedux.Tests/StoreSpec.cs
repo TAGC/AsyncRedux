@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AsyncRedux.Tests.Mock;
@@ -5,6 +6,7 @@ using AsyncRedux.Tests.Mock.Actions;
 using Shouldly;
 using Xunit;
 
+// ReSharper disable AssignNullToNotNullAttribute
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace AsyncRedux.Tests
@@ -63,6 +65,32 @@ namespace AsyncRedux.Tests
             }
         }
 
+        [Fact]
+        internal void Store_Construction_Should_Throw_For_Null_Middleware_Collection()
+        {
+            Should.Throw<ArgumentNullException>(
+                () => StoreSetup.CreateStore<State>()
+                    .FromReducer(Reducers.PassThrough)
+                    .UsingMiddleware(null)
+                    .Build());
+        }
+
+        [Fact]
+        internal void Store_Construction_Should_Throw_If_Any_Middleware_Is_Null()
+        {
+            Should.Throw<ArgumentException>(
+                () => StoreSetup.CreateStore<State>()
+                    .FromReducer(Reducers.PassThrough)
+                    .UsingMiddleware(Mock.Middleware.IncrementInt, null)
+                    .Build());
+        }
+
+        [Fact]
+        internal void Store_Construction_Should_Throw_If_Reducer_Is_Not_Specified()
+        {
+            Should.Throw<InvalidOperationException>(() => StoreSetup.CreateStore<State>().Build());
+        }
+
         [Theory]
         [MemberData(nameof(DispatchExamples))]
         internal async Task Store_Should_Apply_Actions_In_Order_Of_Dispatch(
@@ -70,7 +98,10 @@ namespace AsyncRedux.Tests
             object[] actions,
             State expectedFinalState)
         {
-            var store = StoreSetup.CreateStore(Reducers.Replace, initialState);
+            var store = StoreSetup.CreateStore<State>()
+                .FromReducer(Reducers.Replace)
+                .WithInitialState(initialState)
+                .Build();
 
             foreach (var action in actions)
             {
@@ -80,11 +111,33 @@ namespace AsyncRedux.Tests
             store.State.ShouldBe(expectedFinalState);
         }
 
+        [Fact]
+        internal void Store_Should_Concatenate_Middleware_If_Multiple_Sets_Provided_During_Construction()
+        {
+            var initialState = new State(0, false);
+            var store = StoreSetup.CreateStore<State>()
+                .FromReducer(Reducers.Replace)
+                .WithInitialState(initialState)
+                .UsingMiddleware(Mock.Middleware.IncrementInt)
+                .UsingMiddleware(Mock.Middleware.NegateBool)
+                .Build();
+
+            store.Dispatch(new ChangeInt(1));
+            store.State.IntProperty.ShouldBe(2);
+
+            store.Dispatch(new ChangeBool(false));
+            store.State.BoolProperty.ShouldBe(true);
+        }
+
         [Theory]
         [MemberData(nameof(StateExamples))]
         internal void Store_Should_Have_Provided_Initial_State_After_Construction(State initialState)
         {
-            var store = StoreSetup.CreateStore(Reducers.Replace, initialState);
+            var store = StoreSetup.CreateStore<State>()
+                .FromReducer(Reducers.Replace)
+                .WithInitialState(initialState)
+                .Build();
+
             store.State.ShouldBe(initialState);
         }
 
@@ -92,8 +145,12 @@ namespace AsyncRedux.Tests
         internal void Store_Should_Pass_Dispatched_Actions_Through_Middleware_Before_Reducing()
         {
             var initialState = new State(0, false);
-            var middleware = new Middleware<State>[] { Middleware.IncrementInt, Middleware.NegateBool };
-            var store = StoreSetup.CreateStore(Reducers.Replace, initialState, middleware);
+            var middleware = new Middleware<State>[] { Mock.Middleware.IncrementInt, Mock.Middleware.NegateBool };
+            var store = StoreSetup.CreateStore<State>()
+                .FromReducer(Reducers.Replace)
+                .WithInitialState(initialState)
+                .UsingMiddleware(middleware)
+                .Build();
 
             store.Dispatch(new ChangeInt(1));
             store.State.IntProperty.ShouldBe(2);
