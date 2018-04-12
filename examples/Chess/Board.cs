@@ -1,0 +1,102 @@
+﻿using System.Text;
+using Chess.Pieces;
+using static Chess.Position.ChessFile;
+using static Chess.Pieces.Factory;
+
+namespace Chess
+{
+    internal class Board
+    {
+        private readonly IPiece[,] _pieces;
+
+        private Board()
+        {
+            _pieces = new IPiece[8, 8];
+        }
+
+        private Board(IPiece[,] pieces)
+        {
+            _pieces = pieces;
+        }
+
+        public static Board StartingConfiguration
+        {
+            get
+            {
+                var board = new Board();
+
+                foreach (var player in new[] { Player.White, Player.Black })
+                {
+                    var white = player == Player.White;
+                    var rank = white ? 1 : 8;
+                    var factory = white ? White : Black;
+
+                    board[A, rank] = factory.Rook;
+                    board[B, rank] = factory.Knight;
+                    board[C, rank] = factory.Bishop;
+                    board[D, rank] = factory.Queen;
+                    board[E, rank] = factory.King;
+                    board[F, rank] = factory.Bishop;
+                    board[G, rank] = factory.Knight;
+                    board[H, rank] = factory.Rook;
+
+                    for (var file = A; file <= H; file++)
+                    {
+                        board[file, white ? 2 : 7] = factory.Pawn;
+                    }
+                }
+
+                return board;
+            }
+        }
+
+        public IPiece this[Position position]
+        {
+            get => this[position.File, position.Rank];
+            private set => this[position.File, position.Rank] = value;
+        }
+
+        public IPiece this[Position.ChessFile file, int rank]
+        {
+            get => _pieces[(int)file - 1, rank - 1];
+            private set => _pieces[(int)file - 1, rank - 1] = value;
+        }
+
+        public Board Move(IPiece piece, Position position)
+        {
+            var copy = Copy();
+
+            // Overwrites piece at position, if any.
+            copy[position] = piece;
+
+            return copy;
+        }
+
+        private Board Copy() => new Board(_pieces);
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            var stringBuilder = new StringBuilder();
+
+            for (var rank = 8; rank >= 1; rank--)
+            {
+                stringBuilder.Append(rank);
+
+                for (var file = A; file <= H; file++)
+                {
+                    var piece = this[file, rank];
+                    var symbol = piece?.Symbol ?? ' ';
+
+                    stringBuilder.Append(" " + symbol);
+                }
+
+                stringBuilder.AppendLine();
+            }
+
+            stringBuilder.AppendLine("A B C D E F G H");
+
+            return stringBuilder.ToString();
+        }
+    }
+}
