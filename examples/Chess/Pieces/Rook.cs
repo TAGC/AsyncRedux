@@ -40,12 +40,12 @@ namespace Chess.Pieces
                 throw new InvalidMoveException($"Cannot move to {move.To}");
             }
 
-            for (var i = 0; i < numSteps; i++)
+            for (var i = 1; i <= numSteps; i++)
             {
-                var currentFile = file + fileDelta;
-                var currentRank = rank + rankDelta;
+                var currentFile = file + fileDelta * i;
+                var currentRank = rank + rankDelta * i;
 
-                if (!CanStep(board, currentFile, currentRank, i == numSteps - 1))
+                if (!CanStep(board, currentFile, currentRank, i == numSteps))
                 {
                     throw new InvalidMoveException($"Cannot move to {move.To}");
                 }

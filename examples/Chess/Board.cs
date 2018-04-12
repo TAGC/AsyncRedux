@@ -77,6 +77,22 @@ namespace Chess
         /// <inheritdoc />
         public override string ToString()
         {
+            //const char whiteSquare = '◻';
+            //const char blackSquare = '◼';
+
+            char SymbolAtPosition(Position.ChessFile file, int rank)
+            {
+                var piece = this[file, rank];
+
+                if (piece != null)
+                {
+                    return piece.Symbol;
+                }
+
+                //return ((int)file + rank) % 2 != 0 ? whiteSquare : blackSquare;
+                return '▢';
+            }
+
             var stringBuilder = new StringBuilder();
 
             for (var rank = 8; rank >= 1; rank--)
@@ -85,10 +101,7 @@ namespace Chess
 
                 for (var file = A; file <= H; file++)
                 {
-                    var piece = this[file, rank];
-                    var symbol = piece?.Symbol ?? ' ';
-
-                    stringBuilder.Append(" " + symbol);
+                    stringBuilder.Append(" " + SymbolAtPosition(file, rank));
                 }
 
                 stringBuilder.AppendLine();
