@@ -18,8 +18,5 @@ namespace Chess.Pieces
 
         /// <inheritdoc />
         public override Board ApplyMove(Board board, Move move) => throw new NotImplementedException();
-
-        /// <inheritdoc />
-        public override bool CanApplyMove(Board currentBoard, Move move) => throw new NotImplementedException();
     }
 }

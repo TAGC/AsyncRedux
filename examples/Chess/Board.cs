@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using Chess.Pieces;
 using static Chess.Position.ChessFile;
-using static Chess.Pieces.Factory;
 
 namespace Chess
 {
@@ -29,7 +28,7 @@ namespace Chess
                 {
                     var white = player == Player.White;
                     var rank = white ? 1 : 8;
-                    var factory = white ? White : Black;
+                    var factory = white ? Factory.White : Factory.Black;
 
                     board[A, rank] = factory.Rook;
                     board[B, rank] = factory.Knight;
@@ -58,16 +57,17 @@ namespace Chess
 
         public IPiece this[Position.ChessFile file, int rank]
         {
-            get => _pieces[(int)file - 1, rank - 1];
-            private set => _pieces[(int)file - 1, rank - 1] = value;
+            get => _pieces[(int)file - 1, 8 - rank];
+            private set => _pieces[(int)file - 1, 8 - rank] = value;
         }
 
-        public Board Move(IPiece piece, Position position)
+        public Board RepositionPiece(Position from, Position to)
         {
             var copy = Copy();
 
             // Overwrites piece at position, if any.
-            copy[position] = piece;
+            copy[to] = copy[from];
+            copy[from] = null;
 
             return copy;
         }
@@ -94,7 +94,7 @@ namespace Chess
                 stringBuilder.AppendLine();
             }
 
-            stringBuilder.AppendLine("A B C D E F G H");
+            stringBuilder.AppendLine("  A B C D E F G H");
 
             return stringBuilder.ToString();
         }

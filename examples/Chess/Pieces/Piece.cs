@@ -1,4 +1,6 @@
-﻿namespace Chess.Pieces
+﻿using static Chess.Position;
+
+namespace Chess.Pieces
 {
     internal abstract class Piece : IPiece
     {
@@ -19,10 +21,24 @@
 
         public abstract Board ApplyMove(Board board, Move move);
 
-        public abstract bool CanApplyMove(Board currentBoard, Move move);
+        protected bool OpposingPieceAt(Board board, ChessFile file, int rank)
+        {
+            if (!Position.TryCreate(file, rank, out var position))
+            {
+                return false;
+            }
 
-        /// <inheritdoc />
-        Board IPiece.ApplyMove(Board board, Move move) =>
-            !CanApplyMove(board, move) ? board : ApplyMove(board, move);
+            return board[position.Value] is IPiece otherPiece && otherPiece.Owner != Owner;
+        }
+
+        protected bool FreeSpaceAt(Board board, ChessFile file, int rank)
+        {
+            if (!Position.TryCreate(file, rank, out var position))
+            {
+                return false;
+            }
+
+            return board[position.Value] is null;
+        }
     }
 }
