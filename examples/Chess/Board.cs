@@ -72,8 +72,6 @@ namespace Chess
             return copy;
         }
 
-        private Board Copy() => new Board(_pieces);
-
         /// <inheritdoc />
         public override string ToString()
         {
@@ -111,5 +109,7 @@ namespace Chess
 
             return stringBuilder.ToString();
         }
+
+        private Board Copy() => new Board(_pieces);
     }
 }

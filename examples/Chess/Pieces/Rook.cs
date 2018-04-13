@@ -26,13 +26,13 @@ namespace Chess.Pieces
 
             var (file, rank) = move.From;
             var (newFile, newRank) = move.To;
-            
+
             var fileDelta = Math.Sign(newFile - file);
             var rankDelta = Math.Sign(newRank - rank);
             var horizontalSteps = Math.Abs(newFile - file);
             var verticalSteps = Math.Abs(newRank - rank);
-            var vertical = verticalSteps > 0 && horizontalSteps == 0;
-            var horizontal = verticalSteps == 0 && horizontalSteps > 0;
+            var vertical = (verticalSteps > 0) && (horizontalSteps == 0);
+            var horizontal = (verticalSteps == 0) && (horizontalSteps > 0);
             var numSteps = vertical ? verticalSteps : horizontalSteps;
 
             if (!vertical && !horizontal)
@@ -42,8 +42,8 @@ namespace Chess.Pieces
 
             for (var i = 1; i <= numSteps; i++)
             {
-                var currentFile = file + fileDelta * i;
-                var currentRank = rank + rankDelta * i;
+                var currentFile = file + (fileDelta * i);
+                var currentRank = rank + (rankDelta * i);
 
                 if (!CanStep(board, currentFile, currentRank, i == numSteps))
                 {
@@ -56,8 +56,15 @@ namespace Chess.Pieces
 
         private bool CanStep(Board board, ChessFile file, int rank, bool lastStep)
         {
-            if (FreeSpaceAt(board, file, rank)) return true;
-            if (OpposingPieceAt(board, file, rank) && lastStep) return true;
+            if (FreeSpaceAt(board, file, rank))
+            {
+                return true;
+            }
+
+            if (OpposingPieceAt(board, file, rank) && lastStep)
+            {
+                return true;
+            }
 
             return false;
         }

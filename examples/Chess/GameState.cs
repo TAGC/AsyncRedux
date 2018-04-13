@@ -1,5 +1,3 @@
-using System;
-
 namespace Chess
 {
     internal class GameState

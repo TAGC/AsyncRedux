@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AsyncRedux;
 
 namespace Chess
@@ -20,11 +19,11 @@ namespace Chess
 
         public Board Board => _store.State.Board;
 
+        public bool Complete => _store.State.Winner.HasValue;
+
         public Player? CurrentPlayer => _store.State.CurrentPlayer;
 
         public Player? Winner => _store.State.Winner;
-
-        public bool Complete => _store.State.Winner.HasValue;
 
         public Task PlayMove(Move move) => _store.Dispatch(move);
 
@@ -37,7 +36,8 @@ namespace Chess
             {
                 throw new InvalidMoveException($"No piece at {move.From}");
             }
-            else if (piece.Owner != state.CurrentPlayer)
+
+            if (piece.Owner != state.CurrentPlayer)
             {
                 throw new InvalidMoveException($"{state.CurrentPlayer} cannot move {piece.Symbol} at {move.From}");
             }
@@ -48,12 +48,10 @@ namespace Chess
             {
                 return new GameState(nextBoard, null, winner);
             }
-            else
-            {
-                var nextPlayer = state.CurrentPlayer == Player.White ? Player.Black : Player.White;
 
-                return new GameState(nextBoard, nextPlayer, null);
-            }
+            var nextPlayer = state.CurrentPlayer == Player.White ? Player.Black : Player.White;
+
+            return new GameState(nextBoard, nextPlayer, null);
         }
 
         private static bool CheckGameOver(Board board, out Player? winner)

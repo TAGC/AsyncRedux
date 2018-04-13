@@ -4,6 +4,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static Chess.Position;
 
+// ReSharper disable PossibleInvalidOperationException
+
 namespace Chess
 {
     internal static class Program
@@ -12,6 +14,7 @@ namespace Chess
         {
             var game = new Game();
 
+            Console.OutputEncoding = Encoding.UTF8;
             Console.WriteLine("Starting a new chess game.\n");
             Console.WriteLine(game.Board + "\n");
             Console.WriteLine("Specify moves in algebraic notation e.g. B4 to D5");
@@ -63,18 +66,18 @@ namespace Chess
                 return false;
             }
 
-            if (!Position.TryCreate(
-                file: Enum.Parse<ChessFile>(match.Groups[1].Value, true),
-                rank: int.Parse(match.Groups[2].Value),
-                position: out var from))
+            if (!TryCreate(
+                Enum.Parse<ChessFile>(match.Groups[1].Value, true),
+                int.Parse(match.Groups[2].Value),
+                out var from))
             {
                 return false;
             }
 
-            if (!Position.TryCreate(
-                file: Enum.Parse<ChessFile>(match.Groups[3].Value, true),
-                rank: int.Parse(match.Groups[4].Value),
-                position: out var to))
+            if (!TryCreate(
+                Enum.Parse<ChessFile>(match.Groups[3].Value, true),
+                int.Parse(match.Groups[4].Value),
+                out var to))
             {
                 return false;
             }

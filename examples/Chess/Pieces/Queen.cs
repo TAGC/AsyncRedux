@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Chess.Pieces
+﻿namespace Chess.Pieces
 {
     internal class Queen : Piece
     {
@@ -20,7 +18,7 @@ namespace Chess.Pieces
         public override Board ApplyMove(Board board, Move move)
         {
             // A queen acts like a combination of a bishop and a rook.
-            
+
             var factory = Owner == Player.White ? Factory.White : Factory.Black;
             var bishop = factory.Bishop;
             var rook = factory.Rook;
@@ -33,7 +31,6 @@ namespace Chess.Pieces
                 }
                 catch (InvalidMoveException)
                 {
-                    continue;
                 }
             }
 

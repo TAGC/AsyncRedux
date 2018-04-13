@@ -11,23 +11,23 @@ namespace Chess
 
         public Position(ChessFile file, int rank)
         {
-            if (file < MinFile || file > MaxFile)
+            if ((file < MinFile) || (file > MaxFile))
             {
                 throw new ArgumentOutOfRangeException(nameof(file));
             }
 
-            if (rank < MinRank || rank > MaxRank)
+            if ((rank < MinRank) || (rank > MaxRank))
             {
                 throw new ArgumentOutOfRangeException(nameof(rank));
             }
-            
+
             File = file;
             Rank = rank;
         }
 
         public static bool TryCreate(ChessFile file, int rank, out Position? position)
         {
-            if (file < MinFile || file > MaxFile || rank < MinRank || rank > MaxRank)
+            if ((file < MinFile) || (file > MaxFile) || (rank < MinRank) || (rank > MaxRank))
             {
                 position = null;
                 return false;

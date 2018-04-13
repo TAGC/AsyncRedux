@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using static Chess.Position;
 
 namespace Chess.Pieces
@@ -39,14 +38,14 @@ namespace Chess.Pieces
                 (file - 1, rank - 2),
                 (file - 2, rank - 1),
                 (file - 2, rank + 1),
-                (file - 1, rank + 2),
+                (file - 1, rank + 2)
             };
 
             if (!possibleDestinations.Where(IsValidDestination).Contains((newFile, newRank)))
             {
                 throw new InvalidMoveException($"Cannot move to {move.To}");
             }
-            
+
             return board.RepositionPiece(move.From, move.To);
         }
     }

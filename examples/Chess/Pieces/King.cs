@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using static Chess.Position;
 
 namespace Chess.Pieces
@@ -31,14 +30,14 @@ namespace Chess.Pieces
 
             var possibleDestinations = from fileDelta in new[] { -1, 0, 1 }
                                        from rankDelta in new[] { -1, 0, 1 }
-                                       where fileDelta != 0 || rankDelta != 0
+                                       where (fileDelta != 0) || (rankDelta != 0)
                                        select (file + fileDelta, rank + rankDelta);
 
             if (!possibleDestinations.Where(IsValidDestination).Contains((newFile, newRank)))
             {
                 throw new InvalidMoveException($"Cannot move to {move.To}");
             }
-            
+
             return board.RepositionPiece(move.From, move.To);
         }
     }

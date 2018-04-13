@@ -21,24 +21,26 @@ namespace Chess.Pieces
 
         public abstract Board ApplyMove(Board board, Move move);
 
-        protected bool OpposingPieceAt(Board board, ChessFile file, int rank)
+        protected static bool FreeSpaceAt(Board board, ChessFile file, int rank)
         {
-            if (!Position.TryCreate(file, rank, out var position))
+            if (!TryCreate(file, rank, out var position))
             {
                 return false;
             }
 
-            return board[position.Value] is IPiece otherPiece && otherPiece.Owner != Owner;
+            // ReSharper disable once PossibleInvalidOperationException
+            return board[position.Value] is null;
         }
 
-        protected bool FreeSpaceAt(Board board, ChessFile file, int rank)
+        protected bool OpposingPieceAt(Board board, ChessFile file, int rank)
         {
-            if (!Position.TryCreate(file, rank, out var position))
+            if (!TryCreate(file, rank, out var position))
             {
                 return false;
             }
 
-            return board[position.Value] is null;
+            // ReSharper disable once PossibleInvalidOperationException
+            return board[position.Value] is IPiece otherPiece && (otherPiece.Owner != Owner);
         }
     }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using static Chess.Position;
-using static Chess.Position.ChessFile;
-
-namespace Chess.Pieces
+﻿namespace Chess.Pieces
 {
     internal class Pawn : Piece
     {
